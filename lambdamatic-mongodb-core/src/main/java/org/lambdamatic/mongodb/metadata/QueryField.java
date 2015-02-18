@@ -1,13 +1,12 @@
-package org.lambdamatic.mongodb.metadata;
-
-
 /**
  * 
+ */
+package org.lambdamatic.mongodb.metadata;
+
+/**
  * @author Xavier Coulon <xcoulon@redhat.com>
  *
  */
-public interface DateField extends QueryField {
+public interface QueryField {
 
-	
 }
-

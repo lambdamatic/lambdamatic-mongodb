@@ -13,37 +13,35 @@ import java.util.Arrays;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.lambdamatic.SerializablePredicate;
+import org.lambdamatic.SerializableFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provider for the {@link FilterExpressionCodec}
- * 
  * @author Xavier Coulon <xcoulon@redhat.com>
  *
  */
-public class FilterExpressionCodecProvider implements CodecProvider {
+public class ProjectionExpressionCodecProvider implements CodecProvider {
 
 	/** The usual Logger.*/
-	private static final Logger LOGGER = LoggerFactory.getLogger(FilterExpressionCodecProvider.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectionExpressionCodecProvider.class);
 	
 	/**
-	 * Returns whether the given clazz implements the {@link SerializablePredicate} interface, in which case it can return an
-	 * instance of {@link FilterExpressionCodec}. 
+	 * Returns whether the given clazz implements the {@link SerializableFunction} interface, in which case it can return an
+	 * instance of {@link ProjectionExpressionCodec}. 
 	 * 
 	 * @see org.bson.codecs.configuration.CodecProvider#get(java.lang.Class,
 	 *      org.bson.codecs.configuration.CodecRegistry)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <QM> Codec<QM> get(final Class<QM> clazz, final CodecRegistry registry) {
+	public <PM> Codec<PM> get(final Class<PM> clazz, final CodecRegistry registry) {
 		try {
-			if(Arrays.stream(clazz.getInterfaces()).anyMatch(i -> i.equals(SerializablePredicate.class))) {
-				return (Codec<QM>) new FilterExpressionCodec();
+			if(Arrays.stream(clazz.getInterfaces()).anyMatch(i -> i.equals(SerializableFunction.class))) {
+				return (Codec<PM>) new ProjectionExpressionCodec();
 			}
 		} catch (SecurityException | IllegalArgumentException e) {
-			LOGGER.error("Failed to check if class '{}' is an instance of ''", e, clazz.getName(), SerializablePredicate.class.getName());
+			LOGGER.error("Failed to check if class '{}' is an instance of ''", e, clazz.getName(), SerializableFunction.class.getName());
 		}
 		return null;
 	}
