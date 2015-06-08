@@ -16,20 +16,25 @@ import org.lambdamatic.mongodb.annotations.EmbeddedDocument;
 import org.lambdamatic.mongodb.exceptions.ConversionException;
 import org.lambdamatic.mongodb.metadata.LocationField;
 import org.lambdamatic.mongodb.metadata.QueryArray;
-import org.lambdamatic.mongodb.metadata.QueryField;
-import org.lambdamatic.mongodb.metadata.QueryMetadata;
+import org.lambdamatic.mongodb.metadata.UpdateMetadata;
 import org.lambdamatic.mongodb.metadata.ext.QStringArray;
 
 /**
- * Information about a given field that should be generated in a {@link QueryMetadata} class.
+ * Information about a given field that should be generated in a {@link UpdateMetadata} class.
  * 
  * @author Xavier Coulon <xcoulon@redhat.com>
  *
  */
-public class QueryFieldMetadata extends BaseFieldMetadata {
+public class UpdateFieldMetadata extends BaseFieldMetadata {
 
+	/** Prefix to use for the generated {@link UpdateMetadata} classes. */
+	public static String UPDATE_METADATA_CLASSNAME_PREFIX = "U";
+
+	/** Suffix to use for the generated {@link QueryArray} classes. */
+	public static String UPDATE_ARRAY_METADATA_CLASSNAME_SUFFIX = "Array";
+	
 	/**
-	 * Creates a {@link QueryFieldMetadata} from a field annotated with {@link DocumentId}.
+	 * Creates a {@link UpdateFieldMetadata} from a field annotated with {@link DocumentId}.
 	 * 
 	 * @param variableElement
 	 *            the field element
@@ -37,13 +42,13 @@ public class QueryFieldMetadata extends BaseFieldMetadata {
 	 *            the {@link DocumentId} annotation
 	 * @throws MetadataGenerationException
 	 */
-	public QueryFieldMetadata(final VariableElement variableElement, final DocumentId documentIdAnnotation)
+	public UpdateFieldMetadata(final VariableElement variableElement, final DocumentId documentIdAnnotation)
 			throws MetadataGenerationException {
 		super(getMetadataFieldName(variableElement), getMetadataFieldType(variableElement.asType()), MONGOBD_DOCUMENT_ID);
 	}
 
 	/**
-	 * Creates a {@link QueryFieldMetadata} from a field optionally annotated with {@link DocumentField}.
+	 * Creates a {@link UpdateFieldMetadata} from a field optionally annotated with {@link DocumentField}.
 	 * 
 	 * @param variableElement
 	 *            the field element
@@ -51,7 +56,7 @@ public class QueryFieldMetadata extends BaseFieldMetadata {
 	 *            the optional {@link DocumentField} annotation
 	 * @throws MetadataGenerationException
 	 */
-	public QueryFieldMetadata(final VariableElement variableElement, final DocumentField documentFieldAnnotation)
+	public UpdateFieldMetadata(final VariableElement variableElement, final DocumentField documentFieldAnnotation)
 			throws MetadataGenerationException {
 		super(getMetadataFieldName(variableElement), getMetadataFieldType(variableElement.asType()), getDocumentFieldName(documentFieldAnnotation));
 	}
@@ -67,65 +72,66 @@ public class QueryFieldMetadata extends BaseFieldMetadata {
 	 */
 	protected static FieldType getMetadataFieldType(final TypeMirror variableType) throws MetadataGenerationException {
 		if (variableType instanceof PrimitiveType) {
-			return new FieldType(QueryField.class, getSimilarDeclaredType((PrimitiveType) variableType).getName());
+			return new FieldType(getSimilarDeclaredType((PrimitiveType) variableType));
 		} else if (variableType instanceof DeclaredType) {
 			final DeclaredType declaredType = (DeclaredType) variableType;
 			final Element declaredElement = declaredType.asElement();
 				// embedded documents
 				if (declaredElement.getAnnotation(EmbeddedDocument.class) != null) {
-					return new FieldType(getQueryMetadataType(declaredElement.toString()));
+					return new FieldType(getUpdateMetadataType(declaredElement.toString()));
 				} 
 				// collections (list/set)
 				else if (isCollection(declaredElement)) {
 					final TypeMirror typeArgument = declaredType.getTypeArguments().get(0);
-					return new FieldType(getQueryArrayMetadataType(typeArgument.toString()));
+					return new FieldType(getUpdateArrayMetadataType(typeArgument.toString()));
 				} else {
 					switch (variableType.toString()) {
 					case "org.lambdamatic.mongodb.types.geospatial.Location":
 						return new FieldType(LocationField.class);
 					default:
-						return new FieldType(QueryField.class, variableType.toString());
+						return new FieldType(variableType.toString());
 					}
 				}
+			
 		} else if (variableType.getKind() == TypeKind.ARRAY) {
 			final TypeMirror componentType = ((ArrayType) variableType).getComponentType();
 			final Element variableTypeElement = ((DeclaredType) componentType).asElement();
 			if (variableTypeElement.getKind() == ElementKind.ENUM) {
-				return new FieldType(QueryArray.class, componentType.toString());
+				return new FieldType(componentType.toString());
 			} else if (componentType.getAnnotation(EmbeddedDocument.class) != null) {
 				throw new MetadataGenerationException("Unsupported EmbeddedDocument type: " + variableType);
-				// return null; //generateQueryMetadataType(variableTypeElement);
+				// return null; //generateUpdateMetadataType(variableTypeElement);
 			} else {
-				return new FieldType(QueryArray.class, componentType.toString());
+				return new FieldType(componentType.toString());
 			}
 		}
 		throw new MetadataGenerationException("Unexpected variable type: " + variableType);
 	}
 
 	/**
-	 * @return the fully qualified name of the {@link QueryMetadata} class corresponding to the given {@link Element}
+	 * @return the fully qualified name of the {@link UpdateMetadata} class corresponding to the given {@link Element}
 	 * @param elementTypeName the fully qualified name of the Element to use
 	 */
-	public static String getQueryMetadataType(final String elementTypeName) {
+	public static String getUpdateMetadataType(final String elementTypeName) {
 		final String packageName = ClassUtils.getPackageCanonicalName(elementTypeName.toString());
-		final String shortClassName = Constants.QUERY_METADATA_CLASSNAME_PREFIX
+		final String shortClassName = UPDATE_METADATA_CLASSNAME_PREFIX
 				+ ClassUtils.getShortClassName(elementTypeName.toString());
 		return packageName + '.' + shortClassName;
 	}
 
 	/**
-	 * @return the fully qualified name of the {@link QueryMetadata} class corresponding to the given {@link Element}
+	 * @return the fully qualified name of the {@link UpdateMetadata} class corresponding to the given {@link Element}
 	 * @param elementTypeName the fully qualified name of the Element to use
 	 */
-	public static String getQueryArrayMetadataType(final String elementTypeName) {
+	public static String getUpdateArrayMetadataType(final String elementTypeName) {
 		switch (elementTypeName) {
-		//FIXME: implements other base types
+		//FIXME: implements other base types, or use generics ?
 		case "java.lang.String":
 			return QStringArray.class.getName();
 		default:
 			final String packageName = ClassUtils.getPackageCanonicalName(elementTypeName.toString());
-			final String shortClassName = Constants.QUERY_METADATA_CLASSNAME_PREFIX
-					+ ClassUtils.getShortClassName(elementTypeName.toString()) + Constants.QUERY_ARRAY_METADATA_CLASSNAME_SUFFIX;
+			final String shortClassName = UPDATE_METADATA_CLASSNAME_PREFIX
+					+ ClassUtils.getShortClassName(elementTypeName.toString()) + UPDATE_ARRAY_METADATA_CLASSNAME_SUFFIX;
 			return packageName + '.' + shortClassName;
 		}
 	}

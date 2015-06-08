@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (c) 2014, 2015 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,7 +14,7 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.lambdamatic.SerializableConsumer;
-import org.lambdamatic.mongodb.ProjectionExpression;
+import org.lambdamatic.mongodb.UpdateExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  * @author Xavier Coulon <xcoulon@redhat.com>
  *
  */
-public class ProjectionExpressionCodecProvider implements CodecProvider {
+public class UpdateExpressionCodecProvider implements CodecProvider {
 
 	/** The usual Logger.*/
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectionExpressionCodecProvider.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateExpressionCodecProvider.class);
 	
 	/**
 	 * Returns whether the given clazz implements the {@link SerializableConsumer} interface, in which case it can return an
-	 * instance of {@link ProjectionExpressionCodec}. 
+	 * instance of {@link UpdateExpressionCodec}. 
 	 * 
 	 * @see org.bson.codecs.configuration.CodecProvider#get(java.lang.Class,
 	 *      org.bson.codecs.configuration.CodecRegistry)
@@ -38,8 +38,8 @@ public class ProjectionExpressionCodecProvider implements CodecProvider {
 	@Override
 	public <PM> Codec<PM> get(final Class<PM> clazz, final CodecRegistry registry) {
 		try {
-			if(Arrays.stream(clazz.getInterfaces()).anyMatch(i -> i.equals(ProjectionExpression.class))) {
-				return (Codec<PM>) new ProjectionExpressionCodec();
+			if(Arrays.stream(clazz.getInterfaces()).anyMatch(i -> i.equals(UpdateExpression.class))) {
+				return (Codec<PM>) new UpdateExpressionCodec();
 			}
 		} catch (SecurityException | IllegalArgumentException e) {
 			LOGGER.error("Failed to check if class '{}' is an instance of ''", e, clazz.getName(), SerializableConsumer.class.getName());
