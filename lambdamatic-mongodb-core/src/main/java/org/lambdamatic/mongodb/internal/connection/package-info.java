@@ -5,8 +5,9 @@
  ******************************************************************************/
 
 /**
- * Package for MongoDB configuration.
+ * Package for MongoDB connection.
+ * @author Xavier Coulon
  *
  */
 
-package org.lambdamatic.mongodb.internal.configuration;
+package org.lambdamatic.mongodb.internal.connection;
