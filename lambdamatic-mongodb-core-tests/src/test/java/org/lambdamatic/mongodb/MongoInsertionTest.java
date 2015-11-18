@@ -87,7 +87,7 @@ public class MongoInsertionTest extends MongoBaseTest {
   @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
   public void shouldInsertOneDocumentWithBinaryData() throws IOException {
     // given
-    final byte[] bytes = new byte[]{0,1,2,3,4,5,6,7,9};
+    final byte[] bytes = {0,1,2,3,4,5,6,7,9};
     final Foo foo = new FooBuilder().withStringField("jdoe").withPrimitiveIntField(42)
         .withEnumFoo(EnumFoo.FOO).withBytes(bytes).build();
     // when

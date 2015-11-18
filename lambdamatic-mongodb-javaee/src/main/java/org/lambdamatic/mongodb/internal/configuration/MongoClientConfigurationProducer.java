@@ -19,6 +19,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 
+import org.lambdamatic.mongodb.internal.configuration.MongoClientConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

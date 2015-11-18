@@ -4,7 +4,7 @@
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
     http://www.eclipse.org/legal/epl-v10.html
-   
+
     Contributors:
          Red Hat - Initial Contribution
  -->
@@ -23,16 +23,11 @@
 		<dependency>
 			<groupId>org.lambdamatic</groupId>
 			<artifactId>lambdamatic-analyzer</artifactId>
-			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.lambdamatic</groupId>
 			<artifactId>lambdamatic-mongodb-api</artifactId>
 			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -55,5 +50,5 @@
 			<artifactId>javax.json-api</artifactId>
 		</dependency>
 	</dependencies>
-	
+
 </project>
