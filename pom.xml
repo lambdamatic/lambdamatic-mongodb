@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 	<name>Lambdamatic for MongoDB - Parent</name>
 	<description>A persistence library to manage data on MongoDB using Java 8 Lambda Expressions.</description>
-	<url>https://github.com/lambdamatic/lambdamatic-project</url>
+	<url>https://github.com/lambdamatic/lambdamatic-mongodb</url>
 
 	<licenses>
 		<license>
@@ -152,6 +152,7 @@
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
 				<version>${assertj-core.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
