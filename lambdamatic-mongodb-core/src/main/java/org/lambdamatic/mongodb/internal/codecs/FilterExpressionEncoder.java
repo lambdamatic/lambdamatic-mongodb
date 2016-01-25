@@ -113,7 +113,7 @@ class FilterExpressionEncoder
   }
 
   @Override
-  public boolean visitInfixExpression(final CompoundExpression expr) {
+  public boolean visitCompoundExpression(final CompoundExpression expr) {
     if (!this.nestedExpression) {
       this.writer.writeStartDocument();
     }
